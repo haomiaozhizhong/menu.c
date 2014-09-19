@@ -1,0 +1,83 @@
+Enter file contents here/************************************************************************************/
+/* Copyright (C) mc2lab.com, SSE@USTC, 2014-2015                                    */
+/*                                                                                  */
+/*  FILE NAME             :  menu.c                                                 */
+/*  PRINCIPAL AUTHOR      :  Mengning                                               */
+/*  SUBSYSTEM NAME        :  menu                                                   */
+/*  MODULE NAME           :  menu                                                   */
+/*  LANGUAGE              :  C                                                      */
+/*  TARGET ENVIRONMENT    :  ANY                                                    */
+/*  DATE OF FIRST RELEASE :  2014/08/31                                             */
+/*  DESCRIPTION           :  This is a menu program                                 */
+/************************************************************************************/
+
+/*
+ *Revision log:
+ *
+ *Created by Liang Dong, 2014/9/10
+ */
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define CMD_MAX_LEN 128
+#define DESC_LEN    1024
+#define CMD_NUM     7
+
+int Help();
+
+typedef struct DataNode
+{
+	char cmd[CMD_MAX_LEN];
+	char desc[DESC_LEN];
+	int (*hander)();
+	struct DataNode *next;
+}tDataNode;
+
+static tDataNode head[] = 
+{
+	{"help", "This is help cmd!", Help, &head[1]},
+	{"version", "menu program 1.0", NULL, NULL}
+};
+
+int Help()
+{
+	printf("Menu List:\n");
+	tDataNode *p = head;		
+	while(p != NULL)
+	{
+		printf("%s, %s\n", p->cmd, p->desc);
+		p = p->next;
+	}
+	return 0;
+}
+
+main()
+{		
+	while(1)
+	{
+		char cmd[CMD_MAX_LEN];
+		printf("Plase input a cmd number > ");
+		scanf("%s",cmd);
+		
+		tDataNode *p = head;
+		while(p != NULL)
+		{
+			if(!strcmp(p->cmd, cmd))
+			{
+				printf("%s - %s\n",p->cmd,p->desc);
+				if(p->hander != NULL)
+				{
+					p->hander();
+				}
+				break;
+			}
+			p = p->next;
+		}
+		if(p == NULL)
+		{
+			printf("This is a wrong cmd!\n");
+		}
+	}
+}
